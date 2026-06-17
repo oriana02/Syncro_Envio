@@ -5,7 +5,6 @@ import org.springframework.amqp.rabbit.config.SimpleRabbitListenerContainerFacto
 import org.springframework.amqp.rabbit.connection.ConnectionFactory;
 import org.springframework.amqp.rabbit.core.RabbitTemplate;
 import org.springframework.amqp.support.converter.Jackson2JsonMessageConverter;
-import org.springframework.beans.factory.annotation.Value;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
 import org.springframework.retry.backoff.FixedBackOffPolicy;
@@ -15,25 +14,22 @@ import org.springframework.retry.support.RetryTemplate;
 @Configuration
 public class RabbitMQConfig {
 
-    @Value("${rabbitmq.queue.envio}")
-    private String queueEnvio;
-
-    @Value("${rabbitmq.exchange}")
-    private String exchange;
+    public static final String EXCHANGE = "pedidos.exchange";
+    public static final String COLA_ENVIOS = "envio.generar";
 
     @Bean
-    public Queue queueEnvio() {
-        return QueueBuilder.durable(queueEnvio).build();
+    public Queue colaEnvios() {
+        return QueueBuilder.durable(COLA_ENVIOS).build();
     }
 
     @Bean
     public FanoutExchange fanoutExchange() {
-        return new FanoutExchange(exchange);
+        return new FanoutExchange(EXCHANGE);
     }
 
     @Bean
-    public Binding bindingEnvio(Queue queueEnvio, FanoutExchange fanoutExchange) {
-        return BindingBuilder.bind(queueEnvio).to(fanoutExchange);
+    public Binding bindingEnvio(Queue colaEnvios, FanoutExchange fanoutExchange) {
+        return BindingBuilder.bind(colaEnvios).to(fanoutExchange);
     }
 
     @Bean

@@ -1,5 +1,6 @@
-package com.Syncro.envios.event;
+package com.Syncro.envios.consumer;
 
+import com.Syncro.envios.config.RabbitMQConfig;
 import com.Syncro.envios.dto.PedidoCreadoEvent;
 import com.Syncro.envios.model.Despacho;
 import com.Syncro.envios.service.DespachoService;
@@ -17,7 +18,7 @@ public class PedidoCreadoConsumer {
     private final DespachoService despachoService;
     private final EmailNotificacionService emailNotificacionService;
 
-    @RabbitListener(queues = "${rabbitmq.queue.envio}")
+    @RabbitListener(queues = RabbitMQConfig.COLA_ENVIOS)
     public void consumir(PedidoCreadoEvent evento) {
         log.info("Evento recibido para pedidoId={}", evento.getPedidoId());
 

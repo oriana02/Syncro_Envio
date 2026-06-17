@@ -1,12 +1,23 @@
 package com.Syncro.envios.dto;
 
-import lombok.Data;
 import lombok.NoArgsConstructor;
 import java.util.List;
+import java.math.BigDecimal;
+import com.fasterxml.jackson.annotation.JsonIgnoreProperties;
+import lombok.AllArgsConstructor;
+import lombok.Builder;
+import lombok.Getter;
+import lombok.Setter;
 
-@Data
+
+@Getter
+@Setter
 @NoArgsConstructor
+@AllArgsConstructor
+@Builder
+@JsonIgnoreProperties(ignoreUnknown = true) // Ignorar campos desconocidos al deserializar
 public class PedidoCreadoEvent {
+
     private Long pedidoId;
     private Long empresaId;
     private String destinatarioNombre;
@@ -21,11 +32,18 @@ public class PedidoCreadoEvent {
     private String codigoPostal;
     private List<ItemEvento> items;
 
-    @Data
+    @Getter
+    @Setter
     @NoArgsConstructor
+    @AllArgsConstructor
+    @Builder
+    @JsonIgnoreProperties(ignoreUnknown = true)
     public static class ItemEvento {
+
         private String sku;
         private String nombre;
         private Integer cantidad;
+        private BigDecimal precioUnitario;
     }
+
 }
