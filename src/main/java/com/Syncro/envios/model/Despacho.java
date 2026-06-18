@@ -30,7 +30,7 @@ public class Despacho {
     @Column(nullable = false, length = 30)
     private String estado;
 
-    @Column(name = "destinatario_nombre", nullable = false, length = 150)
+    @Column(name = "destinatario_nombre", nullable = true, length = 150)
     private String destinatarioNombre;
 
     @Column(name = "destinatario_email", length = 150)
