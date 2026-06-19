@@ -19,12 +19,22 @@ import java.util.stream.Collectors;
 @Service
 @Slf4j
 @RequiredArgsConstructor
+/**
+ * Servicio principal para la gestión de despachos en MS-Envíos.
+ * Aplica el patrón Factory Method para crear despachos según el tipo de envío.
+ */
 public class DespachoService {
 
     private final DespachoRepository despachoRepository;
     private final HistorialEstadoEnvioRepository historialRepository;
     private final DespachoFactorySelector factorySelector;
 
+    /**
+     * Crea un despacho a partir de un evento recibido desde RabbitMQ.
+     * Si ya existe un despacho para el pedido, retorna el existente.
+     * @param evento evento con los datos del pedido confirmado
+     * @return despacho creado o existente
+     */
     @Transactional
     public Despacho crearDesdeEvento(PedidoCreadoEvent evento) {
         if (despachoRepository.existsByPedidoId(evento.getPedidoId())) {
@@ -42,6 +52,12 @@ public class DespachoService {
         return guardado;
     }
 
+    /**
+     * Actualiza el estado de un despacho y registra el cambio en el historial.
+     * @param despachoId ID del despacho a actualizar
+     * @param request objeto con el nuevo estado y observaciones
+     * @return respuesta con los datos actualizados del despacho
+     */
     @Transactional
     public DespachoResponse actualizarEstado(Long despachoId, ActualizarEstadoRequest request) {
         Despacho despacho = despachoRepository.findById(despachoId)
@@ -64,6 +80,12 @@ public class DespachoService {
         return toResponse(despacho);
     }
 
+    /**
+     * Obtiene un despacho por su ID de pedido asociado.
+     * @param pedidoId ID del pedido
+     * @return respuesta con los datos del despacho
+     * @throws ResourceNotFoundException si no existe despacho para ese pedido
+     */
     @Transactional(readOnly = true)
     public DespachoResponse obtenerPorPedidoId(Long pedidoId) {
         Despacho despacho = despachoRepository.findByPedidoId(pedidoId)
@@ -71,6 +93,11 @@ public class DespachoService {
         return toResponse(despacho);
     }
 
+    /**
+     * Obtiene todos los despachos asociados a una empresa.
+     * @param empresaId ID de la empresa
+     * @return lista de despachos de la empresa
+     */
     @Transactional(readOnly = true)
     public List<DespachoResponse> obtenerPorEmpresa(Long empresaId) {
         return despachoRepository.findByEmpresaId(empresaId)
@@ -82,12 +109,12 @@ public class DespachoService {
                 .findByDespachoIdOrderByFechaCambioAsc(d.getId())
                 .stream()
                 .map(h -> DespachoResponse.HistorialResponse.builder()
-                        .estadoAnterior(h.getEstadoAnterior())
-                        .estadoNuevo(h.getEstadoNuevo())
-                        .actorTipo(h.getActorTipo())
-                        .fechaCambio(h.getFechaCambio())
-                        .observacion(h.getObservacion())
-                        .build())
+                .estadoAnterior(h.getEstadoAnterior())
+                .estadoNuevo(h.getEstadoNuevo())
+                .actorTipo(h.getActorTipo())
+                .fechaCambio(h.getFechaCambio())
+                .observacion(h.getObservacion())
+                .build())
                 .collect(Collectors.toList());
 
         return DespachoResponse.builder()
