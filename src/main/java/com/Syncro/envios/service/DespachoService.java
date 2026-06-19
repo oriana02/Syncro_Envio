@@ -8,6 +8,7 @@ import com.Syncro.envios.model.Despacho;
 import com.Syncro.envios.model.HistorialEstadoEnvio;
 import com.Syncro.envios.repository.DespachoRepository;
 import com.Syncro.envios.repository.HistorialEstadoEnvioRepository;
+import com.Syncro.envios.factory.DespachoFactorySelector;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.stereotype.Service;
@@ -22,6 +23,7 @@ public class DespachoService {
 
     private final DespachoRepository despachoRepository;
     private final HistorialEstadoEnvioRepository historialRepository;
+    private final DespachoFactorySelector factorySelector;
 
     @Transactional
     public Despacho crearDesdeEvento(PedidoCreadoEvent evento) {
@@ -30,23 +32,13 @@ public class DespachoService {
             return despachoRepository.findByPedidoId(evento.getPedidoId()).get();
         }
 
-        Despacho despacho = Despacho.builder()
-                .pedidoId(evento.getPedidoId())
-                .empresaId(evento.getEmpresaId())
-                .destinatarioNombre(evento.getDestinatarioNombre())
-                .destinatarioEmail(evento.getDestinatarioEmail())
-                .destinatarioTel(evento.getDestinatarioTel())
-                .direccionCalle(evento.getDireccionCalle())
-                .direccionNumero(evento.getDireccionNumero())
-                .direccionDepto(evento.getDireccionDepto())
-                .direccionCiudad(evento.getDireccionCiudad())
-                .direccionRegion(evento.getDireccionRegion())
-                .direccionPais(evento.getDireccionPais() != null ? evento.getDireccionPais() : "Chile")
-                .codigoPostal(evento.getCodigoPostal())
-                .build();
+        // Factory Method: selecciona la fabrica segun el tipo de envio del evento
+        String tipoEnvio = evento.getTipoEnvio() != null ? evento.getTipoEnvio() : "ESTANDAR";
+        Despacho despacho = factorySelector.seleccionar(tipoEnvio).crear(evento);
 
         Despacho guardado = despachoRepository.save(despacho);
-        log.info("Despacho creado id={} para pedidoId={}", guardado.getId(), guardado.getPedidoId());
+        log.info("Despacho creado id={} para pedidoId={} tipo={}",
+                guardado.getId(), guardado.getPedidoId(), guardado.getTipoEnvio());
         return guardado;
     }
 

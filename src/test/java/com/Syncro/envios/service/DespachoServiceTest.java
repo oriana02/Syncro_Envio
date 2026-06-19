@@ -8,6 +8,8 @@ import com.Syncro.envios.model.Despacho;
 import com.Syncro.envios.model.HistorialEstadoEnvio;
 import com.Syncro.envios.repository.DespachoRepository;
 import com.Syncro.envios.repository.HistorialEstadoEnvioRepository;
+import com.Syncro.envios.factory.DespachoFactorySelector;
+import com.Syncro.envios.factory.DespachoEstandarFactory;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
@@ -28,6 +30,7 @@ class DespachoServiceTest {
 
     @Mock DespachoRepository despachoRepository;
     @Mock HistorialEstadoEnvioRepository historialRepository;
+    @Mock DespachoFactorySelector factorySelector;
     @InjectMocks DespachoService despachoService;
 
     private PedidoCreadoEvent evento;
@@ -68,6 +71,7 @@ class DespachoServiceTest {
     @Test
     @DisplayName("crearDesdeEvento - crea despacho correctamente")
     void crearDesdeEvento_ok() {
+        when(factorySelector.seleccionar(any())).thenReturn(new DespachoEstandarFactory());
         when(despachoRepository.existsByPedidoId(1L)).thenReturn(false);
         when(despachoRepository.save(any())).thenReturn(despacho);
 
