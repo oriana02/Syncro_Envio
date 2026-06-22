@@ -4,6 +4,7 @@ import jakarta.persistence.*;
 import lombok.*;
 import java.math.BigDecimal;
 import java.time.LocalDateTime;
+import java.time.ZoneId;
 
 @Entity
 @Table(name = "despacho")
@@ -30,7 +31,7 @@ public class Despacho {
     @Column(nullable = false, length = 30)
     private String estado;
 
-    @Column(name = "destinatario_nombre", nullable = true, length = 150)
+    @Column(name = "destinatario_nombre", length = 150)
     private String destinatarioNombre;
 
     @Column(name = "destinatario_email", length = 150)
@@ -83,16 +84,25 @@ public class Despacho {
 
     @PrePersist
     public void prePersist() {
-        fechaCreacion = LocalDateTime.now();
-        fechaActualizacion = LocalDateTime.now();
-        if (estado == null) estado = "PENDIENTE_RETIRO";
-        if (tipoEnvio == null) tipoEnvio = "ESTANDAR";
-        if (costoEnvio == null) costoEnvio = BigDecimal.ZERO;
-        if (direccionPais == null) direccionPais = "Chile";
+        LocalDateTime now = LocalDateTime.now(ZoneId.of("UTC")); // ← fix
+        fechaCreacion = now;
+        fechaActualizacion = now;
+        if (estado == null) {
+            estado = "PENDIENTE_RETIRO";
+        }
+        if (tipoEnvio == null) {
+            tipoEnvio = "ESTANDAR";
+        }
+        if (costoEnvio == null) {
+            costoEnvio = BigDecimal.ZERO;
+        }
+        if (direccionPais == null) {
+            direccionPais = "Chile";
+        }
     }
 
     @PreUpdate
     public void preUpdate() {
-        fechaActualizacion = LocalDateTime.now();
+        fechaActualizacion = LocalDateTime.now(ZoneId.of("UTC")); // ← fix
     }
 }
