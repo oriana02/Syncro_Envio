@@ -23,13 +23,13 @@ public class RabbitMQConfig {
     }
 
     @Bean
-    public FanoutExchange fanoutExchange() {
+    public FanoutExchange pedidosExchange() {
         return new FanoutExchange(EXCHANGE);
     }
 
     @Bean
-    public Binding bindingEnvio(Queue colaEnvios, FanoutExchange fanoutExchange) {
-        return BindingBuilder.bind(colaEnvios).to(fanoutExchange);
+    public Binding bindingEnvio(Queue colaEnvios, FanoutExchange pedidosExchange) {
+        return BindingBuilder.bind(colaEnvios).to(pedidosExchange);
     }
 
     @Bean
