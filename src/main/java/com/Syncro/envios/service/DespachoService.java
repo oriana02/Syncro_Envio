@@ -14,7 +14,6 @@ import lombok.extern.slf4j.Slf4j;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 import java.util.List;
-import java.util.stream.Collectors;
 
 @Service
 @Slf4j
@@ -101,7 +100,7 @@ public class DespachoService {
     @Transactional(readOnly = true)
     public List<DespachoResponse> obtenerPorEmpresa(Long empresaId) {
         return despachoRepository.findByEmpresaId(empresaId)
-                .stream().map(this::toResponse).collect(Collectors.toList());
+                .stream().map(this::toResponse).toList();
     }
 
     private DespachoResponse toResponse(Despacho d) {
@@ -115,7 +114,7 @@ public class DespachoService {
                 .fechaCambio(h.getFechaCambio())
                 .observacion(h.getObservacion())
                 .build())
-                .collect(Collectors.toList());
+                .toList();
 
         return DespachoResponse.builder()
                 .id(d.getId())
