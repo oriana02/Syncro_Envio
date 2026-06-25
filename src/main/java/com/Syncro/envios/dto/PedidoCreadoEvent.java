@@ -30,6 +30,7 @@ public class PedidoCreadoEvent {
     private String direccionRegion;
     private String direccionPais;
     private String codigoPostal;
+    private String tipoEnvio;
     private List<ItemEvento> items;
 
     @Getter
