@@ -3,7 +3,7 @@ name: Deploy MS-Envios a AWS ECR
 on:
   push:
     branches:
-      - deploy
+      - develop
 
 jobs:
   build-and-push-aws:
